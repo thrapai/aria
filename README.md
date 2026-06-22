@@ -14,7 +14,7 @@ aic run workflow.yml --input name=Thomas
 - Sequential step execution
 - Jinja templates for inputs and prior step outputs
 - Local run artifacts under `.aic/runs/`
-- Built-in extensions: `file.read`, `file.write`, `json.parse`, `text.chunk`, `ai.generate`
+- Built-in extensions: `file.read`, `file.write`, `json.parse`, `text.chunk`, `ai.generate`, `docling.convert`
 - AI providers: OpenAI and Ollama
 
 ## Scope
@@ -35,6 +35,12 @@ With pip:
 ```bash
 pip install -e ".[dev]"
 python -m aic.cli --help
+```
+
+For document conversion support:
+
+```bash
+uv sync --extra docling
 ```
 
 ## Quickstart
@@ -160,6 +166,9 @@ You can also use `api_key_file`; if both are set, the environment variable wins.
 | `json.parse` | `text` | `value` |
 | `text.chunk` | `text`, `size`, `overlap` | `chunks` |
 | `ai.generate` | `model`, `prompt` | `text`, `model` |
+| `docling.convert` | `path` | `text` |
+
+Each extension has a short example in `docs/extensions/`.
 
 ## Run Artifacts
 

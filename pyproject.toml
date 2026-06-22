@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pre-commit", "pytest", "ruff"]
+docling = ["docling"]
 
 [project.scripts]
 aic = "aic.cli:app"

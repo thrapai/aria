@@ -1,6 +1,7 @@
 from aic.core.errors import ExtensionNotFoundError
 from aic.extensions.base import Extension
 from aic.extensions.builtins.ai_generate import AIGenerate
+from aic.extensions.builtins.docling_convert import DoclingConvert
 from aic.extensions.builtins.file_read import FileRead
 from aic.extensions.builtins.file_write import FileWrite
 from aic.extensions.builtins.json_parse import JsonParse
@@ -26,6 +27,6 @@ class Registry:
 
 def default_registry() -> Registry:
     registry = Registry()
-    for extension in (FileRead(), FileWrite(), JsonParse(), TextChunk(), AIGenerate()):
+    for extension in (FileRead(), FileWrite(), JsonParse(), TextChunk(), AIGenerate(), DoclingConvert()):
         registry.register(extension)
     return registry
