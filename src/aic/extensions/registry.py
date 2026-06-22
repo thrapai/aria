@@ -1,0 +1,31 @@
+from aic.core.errors import ExtensionNotFoundError
+from aic.extensions.base import Extension
+from aic.extensions.builtins.ai_generate import AIGenerate
+from aic.extensions.builtins.file_read import FileRead
+from aic.extensions.builtins.file_write import FileWrite
+from aic.extensions.builtins.json_parse import JsonParse
+from aic.extensions.builtins.text_chunk import TextChunk
+
+
+class Registry:
+    def __init__(self) -> None:
+        self._extensions: dict[str, Extension] = {}
+
+    def register(self, extension: Extension) -> None:
+        self._extensions[extension.name] = extension
+
+    def get(self, name: str) -> Extension:
+        try:
+            return self._extensions[name]
+        except KeyError as exc:
+            raise ExtensionNotFoundError(f"Extension not found: {name}") from exc
+
+    def has(self, name: str) -> bool:
+        return name in self._extensions
+
+
+def default_registry() -> Registry:
+    registry = Registry()
+    for extension in (FileRead(), FileWrite(), JsonParse(), TextChunk(), AIGenerate()):
+        registry.register(extension)
+    return registry

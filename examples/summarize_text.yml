@@ -1,0 +1,21 @@
+version: "0.1"
+name: summarize_text
+providers:
+  openai:
+    type: openai
+    api_key_env: OPENAI_API_KEY
+inputs:
+  text:
+    type: string
+    required: true
+steps:
+  - id: summarize
+    uses: ai.generate
+    with:
+      model: openai:gpt-4.1-mini
+      prompt: |
+        Summarize this text in one sentence:
+
+        {{ inputs.text }}
+outputs:
+  summary: "{{ steps.summarize.output.text }}"

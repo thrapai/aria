@@ -1,0 +1,6 @@
+.aic/
+.pytest_cache/
+.ruff_cache/
+.venv/
+__pycache__/
+*.py[cod]

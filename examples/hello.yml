@@ -1,0 +1,14 @@
+version: "0.1"
+name: hello
+inputs:
+  name:
+    type: string
+    required: true
+steps:
+  - id: write
+    uses: file.write
+    with:
+      path: hello.txt
+      content: "Hello {{ inputs.name }}"
+outputs:
+  file: "{{ steps.write.output.path }}"

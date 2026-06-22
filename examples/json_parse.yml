@@ -1,0 +1,13 @@
+version: "0.1"
+name: json_parse
+inputs:
+  text:
+    type: string
+    required: true
+steps:
+  - id: parse
+    uses: json.parse
+    with:
+      text: "{{ inputs.text }}"
+outputs:
+  value: "{{ steps.parse.output.value }}"
