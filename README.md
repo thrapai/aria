@@ -19,12 +19,6 @@ Build AI-powered workflows with ARIA.
 
 Your workflows are source-controlled, CI-friendly, and live in YAML files. Define them, run them locally, and inspect every result from saved run artifacts.
 
-```bash
-aria init
-aria validate workflow.yml
-aria run workflow.yml --input name=Thomas
-```
-
 ## Why ARIA?
 
 - Source-controlled workflows: prompts, steps, inputs, and providers live in YAML.
@@ -38,7 +32,7 @@ aria run workflow.yml --input name=Thomas
 With the install script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/thrapai/aria/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | bash
 ```
 
 With `pipx`:
@@ -70,7 +64,8 @@ aria init
 Run it:
 
 ```bash
-aria run workflow.yml --input name=Thomas
+ollama pull gemma3:4b
+aria run workflow.yml --input path=notes.txt
 ```
 
 ARIA prints final outputs as JSON and writes run artifacts under `.aria/runs/<timestamp>/`.
@@ -78,33 +73,51 @@ ARIA prints final outputs as JSON and writes run artifacts under `.aria/runs/<ti
 ## Workflow
 
 ```yaml
-version: "0.1"
-name: hello
+version: "1"
+name: summarize_file
+
+providers:
+  ollama:
+    type: ollama
+    base_url: http://localhost:11434
 
 inputs:
-  name:
-    type: string
+  path:
+    type: file
     required: true
 
 steps:
-  - id: write
+  - id: read
+    uses: file.read
+    with:
+      path: "{{ inputs.path }}"
+
+  - id: summarize
+    uses: ai.generate
+    with:
+      model: ollama:gemma3:4b
+      prompt: |
+        Summarize this file in five concise bullet points:
+
+        {{ steps.read.output.content }}
+
+  - id: save
     uses: file.write
     with:
-      path: hello.txt
-      content: "Hello {{ inputs.name }}"
+      path: summary.txt
+      content: "{{ steps.summarize.output.text }}"
 
 outputs:
-  file: "{{ steps.write.output.path }}"
+  summary: "{{ steps.summarize.output.text }}"
+  summary_file: "{{ steps.save.output.path }}"
 ```
 
 Templates can read workflow inputs and previous step outputs:
 
 ```jinja2
-{{ inputs.name }}
-{{ steps.write.output.path }}
+{{ inputs.path }}
+{{ steps.read.output.content }}
 ```
-
-Steps can loop over a list with `for_each`; each `item` gets its own step run and the output becomes a list.
 
 ## Built-In Extensions
 
