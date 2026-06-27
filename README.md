@@ -1,11 +1,13 @@
-# AIC
+# ARIA
 
-AIC is a Python CLI runtime for AI workflows as code. Define a workflow in YAML, run it locally, and inspect the artifacts written for each run.
+Automation Runtime for Intelligent Actions.
+
+ARIA is a Python CLI runtime for AI workflows as code. Define a workflow in YAML, run it locally, and inspect the artifacts written for each run.
 
 ```bash
-aic init
-aic validate workflow.yml
-aic run workflow.yml --input name=Thomas
+aria init
+aria validate workflow.yml
+aria run workflow.yml --input name=Thomas
 ```
 
 ## Features
@@ -13,13 +15,13 @@ aic run workflow.yml --input name=Thomas
 - YAML workflow parsing and validation
 - Sequential step execution
 - Jinja templates for inputs and prior step outputs
-- Local run artifacts under `.aic/runs/`
+- Local run artifacts under `.aria/runs/`
 - Built-in extensions: `ai.generate`, `file.read`, `file.write`, `utils.json.parse`, `utils.text.chunk`, `docling.convert`
 - AI providers: OpenAI and Ollama
 
 ## Scope
 
-AIC is a local CLI runtime. It does not include a web UI, hosted service, auth, marketplace, DAG execution, or agent framework.
+ARIA is a local CLI runtime. It does not include a web UI, hosted service, auth, marketplace, DAG execution, or agent framework.
 
 ## Install
 
@@ -27,14 +29,14 @@ With uv:
 
 ```bash
 uv sync --extra dev
-uv run aic --help
+uv run aria --help
 ```
 
 With pip:
 
 ```bash
 pip install -e ".[dev]"
-python -m aic.cli --help
+aria --help
 ```
 
 For document conversion support:
@@ -48,22 +50,22 @@ uv sync --extra docling
 Create a starter workflow:
 
 ```bash
-uv run aic init
+uv run aria init
 ```
 
 Validate it:
 
 ```bash
-uv run aic validate workflow.yml
+uv run aria validate workflow.yml
 ```
 
 Run it:
 
 ```bash
-uv run aic run workflow.yml --input name=Thomas
+uv run aria run workflow.yml --input name=Thomas
 ```
 
-The final outputs print as JSON, and run artifacts are written under `.aic/runs/<timestamp>/`.
+The final outputs print as JSON, and run artifacts are written under `.aria/runs/<timestamp>/`.
 
 ## Workflow Example
 
@@ -109,11 +111,11 @@ steps:
 ## Examples
 
 ```bash
-uv run aic validate examples/hello.yml
-uv run aic run examples/hello.yml --input name=Thomas
+uv run aria validate examples/hello.yml
+uv run aria run examples/hello.yml --input name=Thomas
 
-uv run aic run examples/json_parse.yml --input 'text={"name":"Thomas"}'
-uv run --extra docling aic run examples/summarize_document.yml --input path=report.pdf
+uv run aria run examples/json_parse.yml --input 'text={"name":"Thomas"}'
+uv run --extra docling aria run examples/summarize_document.yml --input path=report.pdf
 ```
 
 ## Providers
@@ -131,7 +133,7 @@ ollama pull gemma3:4b
 Run the PDF summary example:
 
 ```bash
-uv run --extra docling aic run examples/summarize_document.yml --input path=report.pdf
+uv run --extra docling aria run examples/summarize_document.yml --input path=report.pdf
 ```
 
 Workflow config:
@@ -194,7 +196,7 @@ Each extension has a short example in `docs/extensions/`.
 Each run creates a directory like:
 
 ```text
-.aic/runs/2026-06-22T18-30-00/
+.aria/runs/2026-06-22T18-30-00/
   workflow.yml
   inputs.json
   steps/
@@ -204,7 +206,7 @@ Each run creates a directory like:
   metadata.json
 ```
 
-For `ai.generate`, AIC also writes `steps/<step-id>.prompt.txt`.
+For `ai.generate`, ARIA also writes `steps/<step-id>.prompt.txt`.
 
 ## Development
 

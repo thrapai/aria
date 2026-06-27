@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "aic"
+name = "aria"
 version = "0.1.0"
-description = "CLI runtime for AI workflows as code"
+description = "Automation Runtime for Intelligent Actions"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -22,7 +22,10 @@ dev = ["pre-commit", "pytest", "ruff"]
 docling = ["docling"]
 
 [project.scripts]
-aic = "aic.cli:app"
+aria = "aic.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aic"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

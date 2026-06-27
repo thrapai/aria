@@ -45,7 +45,7 @@ outputs:
 
     assert run_workflow(workflow, workflow_path, {"name": "Thomas"}) == {"file": "hello.txt"}
     assert Path("hello.txt").read_text(encoding="utf-8") == "Hello Thomas"
-    assert list(Path(".aic/runs").glob("*/metadata.json"))
+    assert list(Path(".aria/runs").glob("*/metadata.json"))
 
 
 def test_for_each_runs_step_for_each_item(tmp_path, monkeypatch):

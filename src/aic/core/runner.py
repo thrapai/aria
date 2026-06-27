@@ -13,7 +13,7 @@ from aic.types.workflow import InputSpec, Step, Workflow
 
 def run_workflow(workflow: Workflow, workflow_path: Path, cli_inputs: dict[str, Any]) -> dict[str, Any]:
     started_at = _now()
-    run_dir = Path(".aic") / "runs" / started_at
+    run_dir = Path(".aria") / "runs" / started_at
     steps_dir = run_dir / "steps"
     steps_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(workflow_path, run_dir / "workflow.yml")
