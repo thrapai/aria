@@ -1,6 +1,8 @@
-# ai.generate
+# ai
 
-Generate text with an AI provider.
+AI generation extensions.
+
+## ai.generate
 
 Input:
 

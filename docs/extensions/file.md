@@ -1,6 +1,34 @@
-# file.write
+# file
 
-Write UTF-8 text to a file.
+Read and write UTF-8 text files.
+
+## file.read
+
+Input:
+
+```yaml
+path: input.txt
+```
+
+Output:
+
+```json
+{
+  "content": "..."
+}
+```
+
+Example:
+
+```yaml
+steps:
+  - id: read
+    uses: file.read
+    with:
+      path: input.txt
+```
+
+## file.write
 
 Input:
 

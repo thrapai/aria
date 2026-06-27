@@ -23,6 +23,7 @@ class Step(BaseModel):
 
     id: str
     uses: str
+    for_each: Any | None = None
     with_: dict[str, Any] = Field(default_factory=dict, alias="with")
 
 

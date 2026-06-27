@@ -1,0 +1,47 @@
+version: "0.1"
+name: summarize_document
+providers:
+  ollama:
+    type: ollama
+    base_url: http://localhost:11434
+inputs:
+  path:
+    type: file
+    required: true
+steps:
+  - id: extract
+    uses: docling.convert
+    with:
+      path: "{{ inputs.path }}"
+      format: markdown
+  - id: chunks
+    uses: utils.text.chunk
+    with:
+      text: "{{ steps.extract.output.content }}"
+      delimiter: "\n## "
+      size: 4000
+  - id: summarize_chunks
+    uses: ai.generate
+    for_each: "{{ steps.chunks.output.chunks }}"
+    with:
+      model: ollama:gemma3:4b
+      prompt: |
+        Summarize this document section in 3 concise bullet points:
+
+        {{ item }}
+  - id: final_summary
+    uses: ai.generate
+    with:
+      model: ollama:gemma3:4b
+      prompt: |
+        Combine these section summaries into one concise document summary:
+
+        {{ steps.summarize_chunks.output }}
+  - id: write_summary
+    uses: file.write
+    with:
+      path: summary.txt
+      content: "{{ steps.final_summary.output.text }}"
+
+outputs:
+  summary_file: "{{ steps.write_summary.output.path }}"

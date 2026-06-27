@@ -6,7 +6,7 @@ inputs:
     required: true
 steps:
   - id: parse
-    uses: json.parse
+    uses: utils.json.parse
     with:
       text: "{{ inputs.text }}"
 outputs:

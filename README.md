@@ -14,7 +14,7 @@ aic run workflow.yml --input name=Thomas
 - Sequential step execution
 - Jinja templates for inputs and prior step outputs
 - Local run artifacts under `.aic/runs/`
-- Built-in extensions: `file.read`, `file.write`, `json.parse`, `text.chunk`, `ai.generate`, `docling.convert`
+- Built-in extensions: `ai.generate`, `file.read`, `file.write`, `utils.json.parse`, `utils.text.chunk`, `docling.convert`
 - AI providers: OpenAI and Ollama
 
 ## Scope
@@ -94,6 +94,18 @@ Templates can read workflow inputs and previous step outputs:
 {{ steps.write.output.path }}
 ```
 
+Steps can loop over a list with `for_each`; each item is available as `item`, and the step output becomes a list:
+
+```yaml
+steps:
+  - id: summarize_chunks
+    uses: ai.generate
+    for_each: "{{ steps.chunks.output.chunks }}"
+    with:
+      model: openai:gpt-4.1-mini
+      prompt: "Summarize this section:\n\n{{ item }}"
+```
+
 ## Examples
 
 ```bash
@@ -101,6 +113,7 @@ uv run aic validate examples/hello.yml
 uv run aic run examples/hello.yml --input name=Thomas
 
 uv run aic run examples/json_parse.yml --input 'text={"name":"Thomas"}'
+uv run --extra docling aic run examples/summarize_document.yml --input path=report.pdf
 ```
 
 ## Providers
@@ -112,13 +125,13 @@ uv run aic run examples/json_parse.yml --input 'text={"name":"Thomas"}'
 Start Ollama and pull a model:
 
 ```bash
-ollama pull llama3.2
+ollama pull gemma3:4b
 ```
 
-Run the example:
+Run the PDF summary example:
 
 ```bash
-uv run aic run examples/ollama_summarize.yml --input "text=AIC runs local YAML workflows."
+uv run --extra docling aic run examples/summarize_document.yml --input path=report.pdf
 ```
 
 Workflow config:
@@ -143,7 +156,6 @@ Use an environment variable:
 
 ```bash
 export OPENAI_API_KEY="..."
-uv run aic run examples/summarize_text.yml --input "text=AIC runs AI workflows as code."
 ```
 
 Workflow config:
@@ -159,14 +171,21 @@ You can also use `api_key_file`; if both are set, the environment variable wins.
 
 ## Built-In Extensions
 
+Extensions are grouped by namespace:
+
+- `ai.*`: AI generation. `ai.generate` returns text today; other output types can fit under the same namespace later.
+- `file.*`: plain file IO.
+- `utils.*`: generic data utilities.
+- `docling.*`: document conversion, including PDF/DOCX to Markdown or JSON.
+
 | Extension | Input | Output |
 | --- | --- | --- |
 | `file.read` | `path` | `content` |
 | `file.write` | `path`, `content` | `path`, `bytes` |
-| `json.parse` | `text` | `value` |
-| `text.chunk` | `text`, `size`, `overlap` | `chunks` |
+| `utils.json.parse` | `text` | `value` |
+| `utils.text.chunk` | `text`, `size`, `overlap`, `delimiter` | `chunks` |
 | `ai.generate` | `model`, `prompt` | `text`, `model` |
-| `docling.convert` | `path` | `text` |
+| `docling.convert` | `path`, `format` | `format`, `content`, `text` |
 
 Each extension has a short example in `docs/extensions/`.
 

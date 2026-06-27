@@ -8,7 +8,7 @@ from aic.core.errors import ExtensionExecutionError, InputResolutionError
 from aic.core.logger import write_json
 from aic.core.templates import render_value
 from aic.extensions.registry import default_registry
-from aic.types.workflow import InputSpec, Workflow
+from aic.types.workflow import InputSpec, Step, Workflow
 
 
 def run_workflow(workflow: Workflow, workflow_path: Path, cli_inputs: dict[str, Any]) -> dict[str, Any]:
@@ -29,11 +29,20 @@ def run_workflow(workflow: Workflow, workflow_path: Path, cli_inputs: dict[str, 
         for step in workflow.steps:
             step_meta = {"id": step.id, "uses": step.uses, "status": "running", "started_at": _now()}
             metadata["steps"].append(step_meta)
-            step_input = render_value(step.with_, context)
-            write_json(steps_dir / f"{step.id}.input.json", step_input)
-            if step.uses == "ai.generate" and "prompt" in step_input:
-                (steps_dir / f"{step.id}.prompt.txt").write_text(step_input["prompt"], encoding="utf-8")
-            output = registry.get(step.uses).run(step_input, context)
+            if step.for_each is None:
+                output = _run_step(step, context, registry, steps_dir, step.id)
+            else:
+                items = render_value(step.for_each, context, native=True)
+                if not isinstance(items, list):
+                    raise ExtensionExecutionError(f"Step '{step.id}' for_each must render to a list")
+                output = []
+                previous_item = context.item
+                try:
+                    for index, item in enumerate(items):
+                        context.item = item
+                        output.append(_run_step(step, context, registry, steps_dir, f"{step.id}.{index}"))
+                finally:
+                    context.item = previous_item
             context.steps[step.id] = {"output": output}
             write_json(steps_dir / f"{step.id}.output.json", output)
             step_meta.update({"status": "success", "finished_at": _now()})
@@ -64,6 +73,16 @@ def _resolve_inputs(specs: dict[str, InputSpec], cli_inputs: dict[str, Any]) -> 
         elif spec.required:
             raise InputResolutionError(f"Missing required input: {key}")
     return values
+
+
+def _run_step(step: Step, context: AICContext, registry: Any, steps_dir: Path, artifact_id: str) -> dict[str, Any]:
+    step_input = render_value(step.with_, context)
+    write_json(steps_dir / f"{artifact_id}.input.json", step_input)
+    if step.uses == "ai.generate" and "prompt" in step_input:
+        (steps_dir / f"{artifact_id}.prompt.txt").write_text(step_input["prompt"], encoding="utf-8")
+    output = registry.get(step.uses).run(step_input, context)
+    write_json(steps_dir / f"{artifact_id}.output.json", output)
+    return output
 
 
 def _coerce(value: Any, type_: str) -> Any:
