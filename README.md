@@ -1,8 +1,23 @@
-# ARIA
+<h1 align="center">ARIA</h1>
 
-Automation Runtime for Intelligent Actions.
+<p align="center">
+  Automation Runtime for Intelligent Actions.
+</p>
 
-ARIA is a Python CLI runtime for AI workflows as code. Define a workflow in YAML, run it locally, and inspect the artifacts written for each run.
+<p align="center">
+  <img src="docs/logo.png" alt="ARIA logo" width="160">
+</p>
+
+<p align="center">
+  <a href="https://github.com/thrapai/aria/actions/workflows/ci.yml"><img alt="Tests" src="https://github.com/thrapai/aria/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://codecov.io/gh/thrapai/aria"><img alt="Coverage" src="https://codecov.io/gh/thrapai/aria/branch/main/graph/badge.svg"></a>
+  <a href="https://pypi.org/project/aria/"><img alt="PyPI" src="https://img.shields.io/pypi/v/aria.svg"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+</p>
+
+Build AI-powered workflows with ARIA.
+
+Your workflows are source-controlled, CI-friendly, and live in YAML files. Define them, run them locally, and inspect every result from saved run artifacts.
 
 ```bash
 aria init
@@ -10,64 +25,57 @@ aria validate workflow.yml
 aria run workflow.yml --input name=Thomas
 ```
 
-## Features
+## Why ARIA?
 
-- YAML workflow parsing and validation
-- Sequential step execution
-- Jinja templates for inputs and prior step outputs
-- Local run artifacts under `.aria/runs/`
-- Built-in extensions: `ai.generate`, `file.read`, `file.write`, `utils.json.parse`, `utils.text.chunk`, `docling.convert`
-- AI providers: OpenAI and Ollama
-
-## Scope
-
-ARIA is a local CLI runtime. It does not include a web UI, hosted service, auth, marketplace, DAG execution, or agent framework.
+- Source-controlled workflows: prompts, steps, inputs, and providers live in YAML.
+- Full step transparency: see every intermediate result, not just the final answer.
+- Extensible runtime: add your own extension when a built-in step is not enough.
+- Provider flexibility: OpenAI and local Ollama today, with more providers to come.
+- Small runtime: no hosted service, web UI, marketplace, or agent framework.
 
 ## Install
 
-With uv:
+With the install script:
 
 ```bash
-uv sync --extra dev
-uv run aria --help
+curl -fsSL https://raw.githubusercontent.com/thrapai/aria/main/install.sh | bash
 ```
 
-With pip:
+With `pipx`:
 
 ```bash
-pip install -e ".[dev]"
-aria --help
+pipx install aria
 ```
 
-For document conversion support:
+With `pip`:
 
 ```bash
-uv sync --extra docling
+pip install aria
+```
+
+For docling support:
+
+```bash
+pipx install "aria[docling]"
 ```
 
 ## Quickstart
 
-Create a starter workflow:
+Create a workflow:
 
 ```bash
-uv run aria init
-```
-
-Validate it:
-
-```bash
-uv run aria validate workflow.yml
+aria init
 ```
 
 Run it:
 
 ```bash
-uv run aria run workflow.yml --input name=Thomas
+aria run workflow.yml --input name=Thomas
 ```
 
-The final outputs print as JSON, and run artifacts are written under `.aria/runs/<timestamp>/`.
+ARIA prints final outputs as JSON and writes run artifacts under `.aria/runs/<timestamp>/`.
 
-## Workflow Example
+## Workflow
 
 ```yaml
 version: "0.1"
@@ -96,71 +104,26 @@ Templates can read workflow inputs and previous step outputs:
 {{ steps.write.output.path }}
 ```
 
-Steps can loop over a list with `for_each`; each item is available as `item`, and the step output becomes a list:
+Steps can loop over a list with `for_each`; each `item` gets its own step run and the output becomes a list.
 
-```yaml
-steps:
-  - id: summarize_chunks
-    uses: ai.generate
-    for_each: "{{ steps.chunks.output.chunks }}"
-    with:
-      model: openai:gpt-4.1-mini
-      prompt: "Summarize this section:\n\n{{ item }}"
-```
+## Built-In Extensions
 
-## Examples
+- `ai.generate`
+- `file.read`
+- `file.write`
+- `utils.json.parse`
+- `utils.text.chunk`
+- `docling.convert` - _optional_
 
-```bash
-uv run aria validate examples/hello.yml
-uv run aria run examples/hello.yml --input name=Thomas
-
-uv run aria run examples/json_parse.yml --input 'text={"name":"Thomas"}'
-uv run --extra docling aria run examples/summarize_document.yml --input path=report.pdf
-```
+Extension examples live in `docs/extensions/`.
 
 ## Providers
 
-`ai.generate` uses `provider:model`.
-
-### Ollama
-
-Start Ollama and pull a model:
-
-```bash
-ollama pull gemma3:4b
-```
-
-Run the PDF summary example:
-
-```bash
-uv run --extra docling aria run examples/summarize_document.yml --input path=report.pdf
-```
-
-Workflow config:
-
-```yaml
-providers:
-  ollama:
-    type: ollama
-    base_url: http://localhost:11434
-
-steps:
-  - id: summarize
-    uses: ai.generate
-    with:
-      model: ollama:gemma3:4b
-      prompt: "Summarize: {{ inputs.text }}"
-```
-
 ### OpenAI
-
-Use an environment variable:
 
 ```bash
 export OPENAI_API_KEY="..."
 ```
-
-Workflow config:
 
 ```yaml
 providers:
@@ -169,59 +132,32 @@ providers:
     api_key_env: OPENAI_API_KEY
 ```
 
-You can also use `api_key_file`; if both are set, the environment variable wins.
+### Ollama
 
-## Built-In Extensions
-
-Extensions are grouped by namespace:
-
-- `ai.*`: AI generation. `ai.generate` returns text today; other output types can fit under the same namespace later.
-- `file.*`: plain file IO.
-- `utils.*`: generic data utilities.
-- `docling.*`: document conversion, including PDF/DOCX to Markdown or JSON.
-
-| Extension | Input | Output |
-| --- | --- | --- |
-| `file.read` | `path` | `content` |
-| `file.write` | `path`, `content` | `path`, `bytes` |
-| `utils.json.parse` | `text` | `value` |
-| `utils.text.chunk` | `text`, `size`, `overlap`, `delimiter` | `chunks` |
-| `ai.generate` | `model`, `prompt` | `text`, `model` |
-| `docling.convert` | `path`, `format` | `format`, `content`, `text` |
-
-Each extension has a short example in `docs/extensions/`.
-
-## Run Artifacts
-
-Each run creates a directory like:
-
-```text
-.aria/runs/2026-06-22T18-30-00/
-  workflow.yml
-  inputs.json
-  steps/
-    write.input.json
-    write.output.json
-  outputs.json
-  metadata.json
+```bash
+ollama pull gemma3:4b
 ```
 
-For `ai.generate`, ARIA also writes `steps/<step-id>.prompt.txt`.
+```yaml
+providers:
+  ollama:
+    type: ollama
+    base_url: http://localhost:11434
+```
+
+Use providers as `provider:model`, for example `openai:gpt-4.1-mini` or `ollama:gemma3:4b`.
 
 ## Development
 
 ```bash
 uv sync --extra dev
-uv run --extra dev pytest
+uv run --extra dev python -m pytest
 uv run --extra dev ruff check
 uv run --extra dev ruff format --check
-uv run --extra dev pre-commit install
 ```
 
-Without uv:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and release notes.
 
-```bash
-pip install -e ".[dev]"
-pytest
-pre-commit install
-```
+## License
+
+MIT
