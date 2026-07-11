@@ -1,15 +1,15 @@
 from typing import Any
 
-from aic.core.context import AICContext
-from aic.core.errors import ExtensionExecutionError
-from aic.providers.ollama_provider import generate as generate_ollama
-from aic.providers.openai_provider import generate as generate_openai
+from aria.core.context import ARIAContext
+from aria.core.errors import ExtensionExecutionError
+from aria.providers.ollama_provider import generate as generate_ollama
+from aria.providers.openai_provider import generate as generate_openai
 
 
 class AIGenerate:
     name = "ai.generate"
 
-    def run(self, input: dict[str, Any], context: AICContext) -> dict[str, Any]:
+    def run(self, input: dict[str, Any], context: ARIAContext) -> dict[str, Any]:
         model = input["model"]
         provider_name, model_name = _split_model(model)
         provider = context.providers.get(provider_name)

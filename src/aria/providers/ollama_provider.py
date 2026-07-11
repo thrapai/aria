@@ -2,8 +2,8 @@ import json
 from typing import Any
 from urllib import error, request
 
-from aic.core.errors import ExtensionExecutionError
-from aic.types.workflow import ProviderSpec
+from aria.core.errors import ExtensionExecutionError
+from aria.types.workflow import ProviderSpec
 
 
 def generate(model: str, prompt: str, provider: ProviderSpec | None = None) -> str:

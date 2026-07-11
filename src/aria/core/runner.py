@@ -3,12 +3,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from aic.core.context import AICContext
-from aic.core.errors import ExtensionExecutionError, InputResolutionError
-from aic.core.logger import write_json
-from aic.core.templates import render_value
-from aic.extensions.registry import default_registry
-from aic.types.workflow import InputSpec, Step, Workflow
+from aria.core.context import ARIAContext
+from aria.core.errors import ExtensionExecutionError, InputResolutionError
+from aria.core.logger import write_json
+from aria.core.templates import render_value
+from aria.extensions.registry import default_registry
+from aria.types.workflow import InputSpec, Step, Workflow
 
 
 def run_workflow(workflow: Workflow, workflow_path: Path, cli_inputs: dict[str, Any]) -> dict[str, Any]:
@@ -18,7 +18,7 @@ def run_workflow(workflow: Workflow, workflow_path: Path, cli_inputs: dict[str, 
     steps_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(workflow_path, run_dir / "workflow.yml")
 
-    context = AICContext(
+    context = ARIAContext(
         inputs=_resolve_inputs(workflow.inputs, cli_inputs), providers=workflow.providers, run_dir=run_dir
     )
     write_json(run_dir / "inputs.json", context.inputs)
@@ -75,7 +75,7 @@ def _resolve_inputs(specs: dict[str, InputSpec], cli_inputs: dict[str, Any]) -> 
     return values
 
 
-def _run_step(step: Step, context: AICContext, registry: Any, steps_dir: Path, artifact_id: str) -> dict[str, Any]:
+def _run_step(step: Step, context: ARIAContext, registry: Any, steps_dir: Path, artifact_id: str) -> dict[str, Any]:
     step_input = render_value(step.with_, context)
     write_json(steps_dir / f"{artifact_id}.input.json", step_input)
     if step.uses == "ai.generate" and "prompt" in step_input:

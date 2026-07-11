@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from aic.core.runner import run_workflow
-from aic.extensions.builtins.utils import JsonParse, TextChunk
-from aic.types.workflow import Workflow
+from aria.core.runner import run_workflow
+from aria.extensions.builtins.utils import JsonParse, TextChunk
+from aria.types.workflow import Workflow
 
 
 def test_file_write_workflow_creates_file(tmp_path, monkeypatch):

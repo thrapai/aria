@@ -35,16 +35,16 @@ With the install script:
 curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | bash
 ```
 
+With optional docling support:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | ARIA_PACKAGE='aria[docling]' bash
+```
+
 With `pipx`:
 
 ```bash
 pipx install aria
-```
-
-With `pip`:
-
-```bash
-pip install aria
 ```
 
 For docling support:
@@ -132,6 +132,9 @@ Extension examples live in `docs/extensions/`.
 
 ## Providers
 
+ARIA currently supports `openai` and `ollama` provider types. A provider entry is an
+alias that can be used in `ai.generate` model strings as `provider:model`.
+
 ### OpenAI
 
 ```bash
@@ -143,7 +146,13 @@ providers:
   openai:
     type: openai
     api_key_env: OPENAI_API_KEY
+    # Optional:
+    # api_key_file: .openai-key
+    # base_url: https://api.openai.com/v1
 ```
+
+If no `providers.openai` entry is configured, `openai:<model>` still works and
+reads `OPENAI_API_KEY` from the environment.
 
 ### Ollama
 
@@ -158,7 +167,27 @@ providers:
     base_url: http://localhost:11434
 ```
 
-Use providers as `provider:model`, for example `openai:gpt-4.1-mini` or `ollama:gemma3:4b`.
+If no `providers.ollama` entry is configured, `ollama:<model>` still works and
+uses `http://localhost:11434`.
+
+Provider names may be custom aliases when the entry declares a supported `type`:
+
+```yaml
+providers:
+  local:
+    type: ollama
+    base_url: http://localhost:11434
+
+steps:
+  - id: summarize
+    uses: ai.generate
+    with:
+      model: local:gemma3:4b
+      prompt: "Summarize: {{ inputs.text }}"
+```
+
+Use providers as `provider:model`, for example `openai:gpt-4.1-mini`,
+`ollama:gemma3:4b`, or `local:gemma3:4b`.
 
 ## Development
 

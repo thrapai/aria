@@ -8,9 +8,16 @@ The most useful contributions are new or improved extensions that let ARIA work 
 
 ```bash
 uv sync --extra dev
+uv run --extra dev python -m pre_commit install
 uv run --extra dev python -m pytest
 uv run --extra dev ruff check
 uv run --extra dev ruff format --check
+```
+
+Run all hooks manually:
+
+```bash
+uv run --extra dev python -m pre_commit run --all-files
 ```
 
 For document conversion work:

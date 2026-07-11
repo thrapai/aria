@@ -1,14 +1,14 @@
 from pathlib import Path
 from typing import Any
 
-from aic.core.context import AICContext
-from aic.core.errors import ExtensionExecutionError
+from aria.core.context import ARIAContext
+from aria.core.errors import ExtensionExecutionError
 
 
 class FileRead:
     name = "file.read"
 
-    def run(self, input: dict[str, Any], context: AICContext) -> dict[str, Any]:
+    def run(self, input: dict[str, Any], context: ARIAContext) -> dict[str, Any]:
         path = Path(input["path"])
         if not path.exists():
             raise ExtensionExecutionError(f"File not found: {path}")
@@ -18,7 +18,7 @@ class FileRead:
 class FileWrite:
     name = "file.write"
 
-    def run(self, input: dict[str, Any], context: AICContext) -> dict[str, Any]:
+    def run(self, input: dict[str, Any], context: ARIAContext) -> dict[str, Any]:
         path = Path(input["path"])
         content = str(input.get("content", ""))
         path.parent.mkdir(parents=True, exist_ok=True)

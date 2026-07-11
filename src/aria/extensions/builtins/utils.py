@@ -1,14 +1,14 @@
 import json
 from typing import Any
 
-from aic.core.context import AICContext
-from aic.core.errors import ExtensionExecutionError
+from aria.core.context import ARIAContext
+from aria.core.errors import ExtensionExecutionError
 
 
 class JsonParse:
     name = "utils.json.parse"
 
-    def run(self, input: dict[str, Any], context: AICContext) -> dict[str, Any]:
+    def run(self, input: dict[str, Any], context: ARIAContext) -> dict[str, Any]:
         try:
             return {"value": json.loads(input["text"])}
         except json.JSONDecodeError as exc:
@@ -18,7 +18,7 @@ class JsonParse:
 class TextChunk:
     name = "utils.text.chunk"
 
-    def run(self, input: dict[str, Any], context: AICContext) -> dict[str, Any]:
+    def run(self, input: dict[str, Any], context: ARIAContext) -> dict[str, Any]:
         text = input["text"]
         delimiter = input.get("delimiter")
         raw_size = input.get("size")

@@ -2,11 +2,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from aic.types.workflow import ProviderSpec
+from aria.types.workflow import ProviderSpec
 
 
 @dataclass
-class AICContext:
+class ARIAContext:
     inputs: dict[str, Any]
     run_dir: Path
     providers: dict[str, ProviderSpec] = field(default_factory=dict)
