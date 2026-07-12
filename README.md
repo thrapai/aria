@@ -1,146 +1,180 @@
-# ARIA
+<h1 align="center">ARIA</h1>
 
-Automation Runtime for Intelligent Actions.
+<p align="center">
+  Automation Runtime for Intelligent Actions.
+</p>
 
-ARIA is a Python CLI runtime for AI workflows as code. Define a workflow in YAML, run it locally, and inspect the artifacts written for each run.
+<p align="center">
+  <img src="docs/logo.png" alt="ARIA logo" width="160">
+</p>
 
-```bash
-aria init
-aria validate workflow.yml
-aria run workflow.yml --input name=Thomas
-```
+<p align="center">
+  <a href="https://github.com/thrapai/aria/actions/workflows/ci.yml"><img alt="Tests" src="https://github.com/thrapai/aria/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://codecov.io/gh/thrapai/aria"><img alt="Coverage" src="https://codecov.io/gh/thrapai/aria/branch/main/graph/badge.svg"></a>
+  <a href="https://pypi.org/project/thrapai-aria/"><img alt="PyPI" src="https://img.shields.io/pypi/v/thrapai-aria.svg"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+</p>
 
-## Features
+Build AI-powered workflows with ARIA.
 
-- YAML workflow parsing and validation
-- Sequential step execution
-- Jinja templates for inputs and prior step outputs
-- Local run artifacts under `.aria/runs/`
-- Built-in extensions: `ai.generate`, `file.read`, `file.write`, `utils.json.parse`, `utils.text.chunk`, `docling.convert`
-- AI providers: OpenAI and Ollama
+Your workflows are source-controlled, CI-friendly, and live in YAML files. Define them, run them locally, and inspect every result from saved run artifacts.
 
-## Scope
+## Why ARIA?
 
-ARIA is a local CLI runtime. It does not include a web UI, hosted service, auth, marketplace, DAG execution, or agent framework.
+- Source-controlled workflows: prompts, steps, inputs, and providers live in YAML.
+- Full step transparency: see every intermediate result, not just the final answer.
+- Extensible runtime: add your own extension when a built-in step is not enough.
+- Provider flexibility: OpenAI and local Ollama today, with more providers to come.
+- Small runtime: no hosted service, web UI, marketplace, or agent framework.
 
 ## Install
 
-With uv:
+With the install script:
 
 ```bash
-uv sync --extra dev
-uv run aria --help
+curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | bash
 ```
 
-With pip:
+With optional docling support:
 
 ```bash
-pip install -e ".[dev]"
-aria --help
+curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | ARIA_PACKAGE='thrapai-aria[docling]' bash
 ```
 
-For document conversion support:
+With `pipx`:
 
 ```bash
-uv sync --extra docling
+pipx install thrapai-aria
+```
+
+For docling support:
+
+```bash
+pipx install "thrapai-aria[docling]"
 ```
 
 ## Quickstart
 
-Create a starter workflow:
+Create a workflow:
 
 ```bash
-uv run aria init
-```
-
-Validate it:
-
-```bash
-uv run aria validate workflow.yml
+aria init
 ```
 
 Run it:
 
 ```bash
-uv run aria run workflow.yml --input name=Thomas
+ollama pull gemma3:4b
+aria run workflow.yml --input path=notes.txt
 ```
 
-The final outputs print as JSON, and run artifacts are written under `.aria/runs/<timestamp>/`.
+ARIA prints final outputs as JSON and writes run artifacts under `.aria/runs/<timestamp>/`.
 
-## Workflow Example
+## Workflow
 
 ```yaml
-version: "0.1"
-name: hello
+version: "1"
+name: summarize_file
+
+providers:
+  ollama:
+    type: ollama
+    base_url: http://localhost:11434
 
 inputs:
-  name:
-    type: string
+  path:
+    type: file
     required: true
 
 steps:
-  - id: write
+  - id: read
+    uses: file.read
+    with:
+      path: "{{ inputs.path }}"
+
+  - id: summarize
+    uses: ai.generate
+    with:
+      model: ollama:gemma3:4b
+      prompt: |
+        Summarize this file in five concise bullet points:
+
+        {{ steps.read.output.content }}
+
+  - id: save
     uses: file.write
     with:
-      path: hello.txt
-      content: "Hello {{ inputs.name }}"
+      path: summary.txt
+      content: "{{ steps.summarize.output.text }}"
 
 outputs:
-  file: "{{ steps.write.output.path }}"
+  summary: "{{ steps.summarize.output.text }}"
+  summary_file: "{{ steps.save.output.path }}"
 ```
 
 Templates can read workflow inputs and previous step outputs:
 
 ```jinja2
-{{ inputs.name }}
-{{ steps.write.output.path }}
+{{ inputs.path }}
+{{ steps.read.output.content }}
 ```
 
-Steps can loop over a list with `for_each`; each item is available as `item`, and the step output becomes a list:
+## Built-In Extensions
 
-```yaml
-steps:
-  - id: summarize_chunks
-    uses: ai.generate
-    for_each: "{{ steps.chunks.output.chunks }}"
-    with:
-      model: openai:gpt-4.1-mini
-      prompt: "Summarize this section:\n\n{{ item }}"
-```
+- `ai.generate`
+- `file.read`
+- `file.write`
+- `utils.json.parse`
+- `utils.text.chunk`
+- `docling.convert` - _optional_
 
-## Examples
-
-```bash
-uv run aria validate examples/hello.yml
-uv run aria run examples/hello.yml --input name=Thomas
-
-uv run aria run examples/json_parse.yml --input 'text={"name":"Thomas"}'
-uv run --extra docling aria run examples/summarize_document.yml --input path=report.pdf
-```
+Extension examples live in `docs/extensions/`.
 
 ## Providers
 
-`ai.generate` uses `provider:model`.
+ARIA currently supports `openai` and `ollama` provider types. A provider entry is an
+alias that can be used in `ai.generate` model strings as `provider:model`.
+
+### OpenAI
+
+```bash
+export OPENAI_API_KEY="..."
+```
+
+```yaml
+providers:
+  openai:
+    type: openai
+    api_key_env: OPENAI_API_KEY
+    # Optional:
+    # api_key_file: .openai-key
+    # base_url: https://api.openai.com/v1
+```
+
+If no `providers.openai` entry is configured, `openai:<model>` still works and
+reads `OPENAI_API_KEY` from the environment.
 
 ### Ollama
-
-Start Ollama and pull a model:
 
 ```bash
 ollama pull gemma3:4b
 ```
 
-Run the PDF summary example:
-
-```bash
-uv run --extra docling aria run examples/summarize_document.yml --input path=report.pdf
-```
-
-Workflow config:
-
 ```yaml
 providers:
   ollama:
+    type: ollama
+    base_url: http://localhost:11434
+```
+
+If no `providers.ollama` entry is configured, `ollama:<model>` still works and
+uses `http://localhost:11434`.
+
+Provider names may be custom aliases when the entry declares a supported `type`:
+
+```yaml
+providers:
+  local:
     type: ollama
     base_url: http://localhost:11434
 
@@ -148,80 +182,24 @@ steps:
   - id: summarize
     uses: ai.generate
     with:
-      model: ollama:gemma3:4b
+      model: local:gemma3:4b
       prompt: "Summarize: {{ inputs.text }}"
 ```
 
-### OpenAI
-
-Use an environment variable:
-
-```bash
-export OPENAI_API_KEY="..."
-```
-
-Workflow config:
-
-```yaml
-providers:
-  openai:
-    type: openai
-    api_key_env: OPENAI_API_KEY
-```
-
-You can also use `api_key_file`; if both are set, the environment variable wins.
-
-## Built-In Extensions
-
-Extensions are grouped by namespace:
-
-- `ai.*`: AI generation. `ai.generate` returns text today; other output types can fit under the same namespace later.
-- `file.*`: plain file IO.
-- `utils.*`: generic data utilities.
-- `docling.*`: document conversion, including PDF/DOCX to Markdown or JSON.
-
-| Extension | Input | Output |
-| --- | --- | --- |
-| `file.read` | `path` | `content` |
-| `file.write` | `path`, `content` | `path`, `bytes` |
-| `utils.json.parse` | `text` | `value` |
-| `utils.text.chunk` | `text`, `size`, `overlap`, `delimiter` | `chunks` |
-| `ai.generate` | `model`, `prompt` | `text`, `model` |
-| `docling.convert` | `path`, `format` | `format`, `content`, `text` |
-
-Each extension has a short example in `docs/extensions/`.
-
-## Run Artifacts
-
-Each run creates a directory like:
-
-```text
-.aria/runs/2026-06-22T18-30-00/
-  workflow.yml
-  inputs.json
-  steps/
-    write.input.json
-    write.output.json
-  outputs.json
-  metadata.json
-```
-
-For `ai.generate`, ARIA also writes `steps/<step-id>.prompt.txt`.
+Use providers as `provider:model`, for example `openai:gpt-4.1-mini`,
+`ollama:gemma3:4b`, or `local:gemma3:4b`.
 
 ## Development
 
 ```bash
 uv sync --extra dev
-uv run --extra dev pytest
+uv run --extra dev python -m pytest
 uv run --extra dev ruff check
 uv run --extra dev ruff format --check
-uv run --extra dev pre-commit install
 ```
 
-Without uv:
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and release notes.
 
-```bash
-pip install -e ".[dev]"
-pytest
-pre-commit install
-```
+## License
+
+MIT

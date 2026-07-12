@@ -1,9 +1,9 @@
-from aic.core.errors import ExtensionNotFoundError
-from aic.extensions.base import Extension
-from aic.extensions.builtins.ai import AIGenerate
-from aic.extensions.builtins.docling import DoclingConvert
-from aic.extensions.builtins.file import FileRead, FileWrite
-from aic.extensions.builtins.utils import JsonParse, TextChunk
+from aria.core.errors import ExtensionNotFoundError
+from aria.extensions.base import Extension
+from aria.extensions.builtins.ai import AIGenerate
+from aria.extensions.builtins.docling import DoclingConvert
+from aria.extensions.builtins.file import FileRead, FileWrite
+from aria.extensions.builtins.utils import JsonParse, TextChunk
 
 
 class Registry:

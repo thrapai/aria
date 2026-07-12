@@ -1,13 +1,13 @@
 from typing import Any
 
-from aic.core.context import AICContext
-from aic.core.errors import ExtensionExecutionError
+from aria.core.context import ARIAContext
+from aria.core.errors import ExtensionExecutionError
 
 
 class DoclingConvert:
     name = "docling.convert"
 
-    def run(self, input: dict[str, Any], context: AICContext) -> dict[str, Any]:
+    def run(self, input: dict[str, Any], context: ARIAContext) -> dict[str, Any]:
         try:
             from docling.document_converter import DocumentConverter
         except ImportError as exc:

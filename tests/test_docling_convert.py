@@ -3,8 +3,8 @@ import types
 
 import pytest
 
-from aic.core.errors import ExtensionExecutionError
-from aic.extensions.builtins.docling import DoclingConvert
+from aria.core.errors import ExtensionExecutionError
+from aria.extensions.builtins.docling import DoclingConvert
 
 
 def _stub_docling(monkeypatch):

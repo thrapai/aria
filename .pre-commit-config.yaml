@@ -5,12 +5,12 @@ repos:
         name: ruff check
         entry: uv run --extra dev ruff check
         language: system
-        types: [python]
+        types: [python, yaml]
       - id: ruff-format
         name: ruff format
         entry: uv run --extra dev ruff format --check
         language: system
-        types: [python]
+        types: [python, yaml]
       - id: pytest
         name: pytest
         entry: uv run --extra dev pytest

@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 
-from aic.types.workflow import ProviderSpec
+from aria.types.workflow import ProviderSpec
 
-from aic.core.errors import ExtensionExecutionError
+from aria.core.errors import ExtensionExecutionError
 
 
 def generate(model: str, prompt: str, provider: ProviderSpec | None = None) -> str:

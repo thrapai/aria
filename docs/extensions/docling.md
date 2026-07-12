@@ -9,6 +9,12 @@ Convert a document file to Markdown or JSON with Docling.
 Install:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | ARIA_PACKAGE='thrapai-aria[docling]' bash
+```
+
+For development:
+
+```bash
 uv sync --extra docling
 ```
 

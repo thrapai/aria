@@ -1,12 +1,12 @@
-from aic.core.context import AICContext
-from aic.extensions.builtins import ai
-from aic.extensions.builtins.ai import AIGenerate
-from aic.types.workflow import ProviderSpec
+from aria.core.context import ARIAContext
+from aria.extensions.builtins import ai
+from aria.extensions.builtins.ai import AIGenerate
+from aria.types.workflow import ProviderSpec
 
 
 def test_ai_generate_routes_ollama(monkeypatch, tmp_path):
     monkeypatch.setattr(ai, "generate_ollama", lambda model, prompt, provider: f"{model}: {prompt}")
-    context = AICContext(
+    context = ARIAContext(
         inputs={},
         run_dir=tmp_path,
         providers={"local": ProviderSpec(type="ollama", base_url="http://localhost:11434")},

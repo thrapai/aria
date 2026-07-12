@@ -4,14 +4,14 @@ from jinja2 import StrictUndefined, TemplateError, Undefined
 from jinja2.nativetypes import NativeEnvironment
 from jinja2.sandbox import SandboxedEnvironment
 
-from aic.core.context import AICContext
-from aic.core.errors import TemplateRenderError
+from aria.core.context import ARIAContext
+from aria.core.errors import TemplateRenderError
 
 string_env = SandboxedEnvironment(undefined=StrictUndefined)
 native_env = NativeEnvironment(undefined=StrictUndefined)
 
 
-def render_value(value: Any, context: AICContext, native: bool = False) -> Any:
+def render_value(value: Any, context: ARIAContext, native: bool = False) -> Any:
     try:
         if isinstance(value, str):
             rendered = (native_env if native else string_env).from_string(value).render(context.template_data())

@@ -3,11 +3,25 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "aria"
+name = "thrapai-aria"
 version = "0.1.0"
 description = "Automation Runtime for Intelligent Actions"
 readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Thomas Rapai", email = "th.rapai@hotmail.com" }]
+keywords = ["ai", "automation", "cli", "workflow", "yaml"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
 dependencies = [
   "jinja2",
   "openai",
@@ -17,15 +31,20 @@ dependencies = [
   "typer",
 ]
 
+[project.urls]
+Homepage = "https://github.com/thrapai/aria"
+Repository = "https://github.com/thrapai/aria"
+Issues = "https://github.com/thrapai/aria/issues"
+
 [project.optional-dependencies]
-dev = ["pre-commit", "pytest", "ruff"]
+dev = ["pre-commit", "pytest", "pytest-cov", "ruff"]
 docling = ["docling"]
 
 [project.scripts]
-aria = "aic.cli:app"
+aria = "aria.cli:app"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/aic"]
+packages = ["src/aria"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

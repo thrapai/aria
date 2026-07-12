@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from aic.types.workflow import Workflow
+from aria.types.workflow import Workflow
 
 
 def test_valid_workflow_passes_validation():

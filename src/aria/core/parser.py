@@ -3,8 +3,8 @@ from pathlib import Path
 import yaml
 from pydantic import ValidationError
 
-from aic.core.errors import WorkflowParseError, WorkflowValidationError
-from aic.types.workflow import Workflow
+from aria.core.errors import WorkflowParseError, WorkflowValidationError
+from aria.types.workflow import Workflow
 
 
 def load_workflow(path: Path) -> Workflow:
