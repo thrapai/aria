@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/thrapai/aria/actions/workflows/ci.yml"><img alt="Tests" src="https://github.com/thrapai/aria/actions/workflows/ci.yml/badge.svg"></a>
   <a href="https://codecov.io/gh/thrapai/aria"><img alt="Coverage" src="https://codecov.io/gh/thrapai/aria/branch/main/graph/badge.svg"></a>
-  <a href="https://pypi.org/project/aria-cli/"><img alt="PyPI" src="https://img.shields.io/pypi/v/aria-cli.svg"></a>
+  <a href="https://pypi.org/project/thrapai-aria/"><img alt="PyPI" src="https://img.shields.io/pypi/v/thrapai-aria.svg"></a>
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
 </p>
 
@@ -38,19 +38,19 @@ curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | ba
 With optional docling support:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | ARIA_PACKAGE='aria-cli[docling]' bash
+curl -fsSL https://raw.githubusercontent.com/thrapai/aria/master/install.sh | ARIA_PACKAGE='thrapai-aria[docling]' bash
 ```
 
 With `pipx`:
 
 ```bash
-pipx install aria-cli
+pipx install thrapai-aria
 ```
 
 For docling support:
 
 ```bash
-pipx install "aria-cli[docling]"
+pipx install "thrapai-aria[docling]"
 ```
 
 ## Quickstart
