@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/logo.png" alt="ARIA logo" width="160">
+  <img src="docs/logo.png" alt="ARIA logo" width="520">
 </p>
 
 <p align="center">
@@ -69,6 +69,18 @@ aria run workflow.yml --input path=notes.txt
 ```
 
 ARIA prints final outputs as JSON and writes run artifacts under `.aria/runs/<timestamp>/`.
+
+Check the installed version:
+
+```bash
+aria version
+```
+
+See upgrade commands:
+
+```bash
+aria update --method pipx
+```
 
 ## Workflow
 
